@@ -1,5 +1,6 @@
 #!/bin/bash
 
+START_TIME=$(date +%s)
 USERID=$(id -u)
 R="\e[31m"
 G="\e[32m"
@@ -33,16 +34,10 @@ VALIDATE(){
     fi
 }
 
-dnf module disable nodejs -y &>>$LOG_FILE
-VALIDATE $? "Disabling default nodejs"
+dnf install python3 gcc python3-devel -y &>>$LOG_FILE
+VALIDATE $? "Install Python3 packages"
 
-dnf module enable nodejs:20 -y &>>$LOG_FILE
-VALIDATE $? "Enabling nodejs:20"
-
-dnf install nodejs -y &>>$LOG_FILE
-VALIDATE $? "Installing nodejs:20"
-
-id roboshop
+id roboshop &>>$LOG_FILE
 if [ $? -ne 0 ]
 then
     useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop &>>$LOG_FILE
@@ -54,34 +49,30 @@ fi
 mkdir -p /app 
 VALIDATE $? "Creating app directory"
 
-curl -o /tmp/catalogue.zip https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip &>>$LOG_FILE
-VALIDATE $? "Downloading Catalogue"
+curl -o /tmp/payment.zip https://roboshop-artifacts.s3.amazonaws.com/payment-v3.zip &>>$LOG_FILE
+VALIDATE $? "Downloading payment"
 
 rm -rf /app/*
 cd /app 
-unzip /tmp/catalogue.zip &>>$LOG_FILE
-VALIDATE $? "unzipping catalogue"
+unzip /tmp/payment.zip &>>$LOG_FILE
+VALIDATE $? "unzipping payment"
 
-npm install &>>$LOG_FILE
-VALIDATE $? "Installing Dependencies"
+pip3 install -r requirements.txt &>>$LOG_FILE
+VALIDATE $? "Installing dependencies"
 
-cp $SCRIPT_DIR/catalogue.service /etc/systemd/system/catalogue.service
-VALIDATE $? "Copying catalogue service"
+cp $SCRIPT_DIR/payment.service /etc/systemd/system/payment.service &>>$LOG_FILE
+VALIDATE $? "Copying payment service"
 
 systemctl daemon-reload &>>$LOG_FILE
-systemctl enable catalogue  &>>$LOG_FILE
-systemctl start catalogue
-VALIDATE $? "Starting Catalogue"
+VALIDATE $? "Daemon Reload"
 
-cp $SCRIPT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo 
-dnf install mongodb-mongosh -y &>>$LOG_FILE
-VALIDATE $? "Installing MongoDB Client"
+systemctl enable payment &>>$LOG_FILE
+VALIDATE $? "Enable payment"
 
-STATUS=$(mongosh --host mongodb.summu.site --eval 'db.getMongo().getDBNames().indexOf("catalogue")')
-if [ $STATUS -lt 0 ]
-then
-    mongosh --host mongodb.summu.site </app/db/master-data.js &>>$LOG_FILE
-    VALIDATE $? "Loading data into MongoDB"
-else
-    echo -e "Data is already loaded ... $Y SKIPPING $N"
-fi
+systemctl start payment &>>$LOG_FILE
+VALIDATE $? "Starting payment"
+
+END_TIME=$(date +%s)
+TOTAL_TIME=$(( $END_TIME - $START_TIME ))
+
+echo -e "Script exection completed successfully, $Y time taken: $TOTAL_TIME seconds $N" | tee -a $LOG_FILE
