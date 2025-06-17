@@ -1,0 +1,22 @@
+- firstname: samrin
+  lastname: mohammed
+  email: mohammedsamrin25@gmail.com
+  addresses: # list of addresses
+  - type: perm
+    doorNo: 111
+    street: gandhiNagar
+  - type: current
+    doorNo: 111
+    street: gandhiNagar
+
+
+- firstname: samrin
+  lastname: mohammed
+  email: mohammedsamrin25@gmail.com
+  addresses: # list of addresses
+  - type: perm
+    doorNo: 111
+    street: gandhiNagar
+  - type: current
+    doorNo: 111
+    street: gandhiNagar

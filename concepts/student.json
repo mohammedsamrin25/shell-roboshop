@@ -1,0 +1,17 @@
+{
+	"firstname": "Samrin",
+	"lastname": "Mohammed",
+	"dob": "2024-01-01",
+	"addresses": [
+		{
+			"type": "perm",
+			"doorno": "111",
+			"street": "gandi nagar"
+		},
+		{
+			"type": "perm",
+			"doorno": "111",
+			"street": "gandi nagar"
+		}
+	]
+}

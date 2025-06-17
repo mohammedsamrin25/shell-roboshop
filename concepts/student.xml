@@ -1,0 +1,15 @@
+<Student>
+	<Firstname>Samrin </Firstname>
+	<Lastname>Mohammed</Lastname>
+	<DOB>2024-01-01</DOB>
+	<Addresses>
+		<PermAddress>
+			<DoorNo>111</DoorNo>
+			<Street>Gandi Nagar</Street>
+		</PermAddress>
+		<CurrentAddress>
+			<DoorNo>111</DoorNo>
+			<Street>Gandi Nagar</Street>
+		</CurrentAddress>
+	</Addresses>
+</Student>
